@@ -20,4 +20,4 @@ jobs:
           git config user.email 'msteves@paychex.com'
           git checkout develop
           git merge ${GITHUB_REF}
-          git push
+          git push --no-ff
