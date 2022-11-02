@@ -1,0 +1,21 @@
+name: Automerge
+
+on:
+  push:
+    branches:
+      - 'release/release_*'
+
+jobs:
+  merge_forward:
+    name: Merges release branches back to develop
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Merge
+        run: |
+          git config user.name 'Automerge'
+          git config user.email 'msteves@paychex.com'
+          git checkout develop
+          git merge ${GITHUB_REF##*/}
+          git push
