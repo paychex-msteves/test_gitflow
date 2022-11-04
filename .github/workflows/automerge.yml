@@ -18,6 +18,24 @@ jobs:
         run: |
           git config user.name 'Automerge'
           git config user.email 'msteves@paychex.com'
+          
+          source_branch = ${GITHUB_REF}
+          
+          for i in `git branch | grep release/release_* | sort`
+          do
+            if [ `echo $i | cut -d _ -f 2` -le `echo ${GITHUB_REF} | cut -d _ -f 2`]
+            then
+              continue
+            fi
+            
+            git checkout $i
+            git merge --no-ff source_branch
+            git push
+            
+            source_branch = $i
+            
+          done
+          
           git checkout develop
-          git merge --no-ff ${GITHUB_REF}
+          git merge --no-ff source_branch
           git push
