@@ -23,7 +23,7 @@ jobs:
           echo "Initial source branch - $source_branch"
           
           branches=(`git branch`)
-          release_branches=$(printf -- '%s\n' "${branches[@]}" | grep release/release_* | tr '\n' ' ')
+          release_branches=$(printf -- '%s\n' "${branches[@]}" | grep release/release_* | sort | tr '\n' ' ')
           
           for release_branch in ${release_branches[@]}
           do
