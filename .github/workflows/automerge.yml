@@ -22,24 +22,27 @@ jobs:
           source_branch=${GITHUB_REF}
           echo "Initial source branch - $source_branch"
           
-          for i in `git branch | grep release/release_* | sort`
+          branches=(`git branch`)
+          release_branches=$(`printf -- '%s\n' "${branches[@]}" | grep release/release_* | tr '\n' ' ')
+          
+          for release_branch in release_branches
           do
-            echo "Processing release branch $i"
-            if [ `echo $i | cut -d _ -f 2` -le `echo ${GITHUB_REF} | cut -d _ -f 2`]
+            echo "Processing release branch $release_branch"
+            if [ `echo $release_branch | cut -d _ -f 2` -le `echo ${GITHUB_REF} | cut -d _ -f 2` ]
             then
-              echo "Release branch $i is less than or equal to source release branch $source_branch - SKIPPING"
+              echo "Release branch $release_branch is less than or equal to source release branch $source_branch - SKIPPING"
               continue
             fi
             
-            echo "Checking out release branch $i"
-            git checkout $i
-            echo "Merging source branch $source_branch into branch $i"
+            echo "Checking out release branch $release_branch"
+            git checkout $release_branch
+            echo "Merging source branch $source_branch into branch $release_branch"
             git merge --no-ff source_branch
             echo "Pushing commit"
             git push
             
-            source_branch=$i
-            echo "Source branch set to $i"
+            source_branch=$release_branch
+            echo "Source branch set to $release_branch"
             
           done
           
