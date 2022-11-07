@@ -1,3 +1,5 @@
 # test_gitflow
 
-This is a repository to test GitFlow
+This is a repository to test GitFlow.
+
+I've tested merges from a release branch back to develop.
