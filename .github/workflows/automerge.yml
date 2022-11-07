@@ -22,8 +22,10 @@ jobs:
           source_branch=${GITHUB_REF}
           echo "Initial source branch - $source_branch"
           
-          branches=(`git branch`)
+          branches=(`git branch -r`)
+          echo "Branches - ${branches[@]}"
           release_branches=$(printf -- '%s\n' "${branches[@]}" | grep release/release_* | sort | tr '\n' ' ')
+          echo "Release branches - ${release_branches[@]}"
           
           for release_branch in ${release_branches[@]}
           do
@@ -34,9 +36,11 @@ jobs:
               continue
             fi
             
-            echo "Checking out release branch $release_branch"
-            git checkout $release_branch
-            echo "Merging source branch $source_branch into branch $release_branch"
+            local_release_branch=`echo $release_branch | cut -c 8-`
+            
+            echo "Checking out release branch $local_release_branch"
+            git checkout $local_release_branch
+            echo "Merging source branch $source_branch into branch $local_release_branch"
             git merge --no-ff $source_branch
             echo "Pushing commit"
             git push
