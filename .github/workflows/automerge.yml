@@ -49,7 +49,7 @@ jobs:
             if [ $? -ne 0 ]
             then
               echo "Merge failed. Opening pull request."
-              gh pr create --head ${source-branch} --base $local_release_branch --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
+              gh pr create --head $source_branch --base $local_release_branch --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
               exit 0
             else
               echo "Pushing commit"
@@ -69,7 +69,7 @@ jobs:
           if [ $? -ne 0 ]
           then
             echo "Merge failed. Opening pull request."
-            gh pr create --head ${source-branch} --base develop --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
+            gh pr create --head $source_branch --base develop --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
           else
             echo "Pushing commit"
             git push
