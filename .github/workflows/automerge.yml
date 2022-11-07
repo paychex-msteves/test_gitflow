@@ -68,8 +68,9 @@ jobs:
           git merge --no-ff $source_branch
           if [ $? -ne 0 ]
           then
+            local_source_branch=`echo $source_branch | cut -c 8-`
             echo "Merge failed. Opening pull request."
-            gh pr create --head $source_branch --base develop --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
+            gh pr create --head $local_source_branch --base develop --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
           else
             echo "Pushing commit"
             git push
