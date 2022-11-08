@@ -68,6 +68,7 @@ jobs:
           then
             echo "Merge failed. Opening pull request."
             gh pr create --head $source_branch --base develop --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
+            exit 0
           else
             echo "Pushing commit"
             git push
