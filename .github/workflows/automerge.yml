@@ -27,7 +27,7 @@ jobs:
           
           branches=(`git branch -r`)
           echo "Branches - ${branches[@]}"
-          release_branches=$(printf -- '%s\n' "${branches[@]}" | grep release/release_* | sort | tr '\n' ' ')
+          release_branches=$(printf -- '%s\n' "${branches[@]}" | cut -c 8- | grep release/release_* | sort | tr '\n' ' ')
           echo "Release branches - ${release_branches[@]}"
           
           for release_branch in ${release_branches[@]}
@@ -39,17 +39,15 @@ jobs:
               continue
             fi
             
-            local_release_branch=`echo $release_branch | cut -c 8-`
+            echo "Checking out release branch $release_branch"
+            git checkout $release_branch
             
-            echo "Checking out release branch $local_release_branch"
-            git checkout $local_release_branch
-            
-            echo "Merging source branch $source_branch into branch $local_release_branch"
+            echo "Merging source branch $source_branch into branch $release_branch"
             git merge --no-ff $source_branch
             if [ $? -ne 0 ]
             then
               echo "Merge failed. Opening pull request."
-              gh pr create --head $source_branch --base $local_release_branch --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
+              gh pr create --head $source_branch --base $release_branch --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
               exit 0
             else
               echo "Pushing commit"
@@ -68,9 +66,8 @@ jobs:
           git merge --no-ff $source_branch
           if [ $? -ne 0 ]
           then
-            local_source_branch=`echo $source_branch | cut -c 8-`
             echo "Merge failed. Opening pull request."
-            gh pr create --head $local_source_branch --base develop --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
+            gh pr create --head $source_branch --base develop --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
           else
             echo "Pushing commit"
             git push
