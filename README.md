@@ -1,6 +1,6 @@
 # GitFlow Automatic Merge Test Repository
 
-This is a repository to test GitFlow.
+This is a repository to test GitFlow automatic merging.
 
 I've tested merges from a release branch back to develop.
 
