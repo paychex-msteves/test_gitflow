@@ -1,4 +1,4 @@
-# GitFlow Automatic Merge Test Repository
+# GitFlow Automatic Merge of Branches Test Repository
 
 This is a repository to test GitFlow.
 
