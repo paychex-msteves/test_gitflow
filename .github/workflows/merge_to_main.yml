@@ -1,0 +1,25 @@
+name: Merge to Main
+
+on:
+  workflow_dispatch:
+    in
+
+jobs:
+  merge_to_master:
+    name: Merges release branches to main using fast forwards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Merge
+        shell: bash {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name 'Automerge'
+          git config user.email 'msteves@paychex.com'
+          
+          source_branch=${GITHUB_REF}
+          echo "Initial source branch - $source_branch"
