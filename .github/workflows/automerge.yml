@@ -25,24 +25,32 @@ jobs:
           source_branch=${GITHUB_REF}
           echo "Initial source branch - $source_branch"
           
+          # Get remote branches
           branches=(`git branch -r`)
-          echo "Branches - ${branches[@]}"
+          # Strip off origin/ from the branch names, limit to release branches, and sort
           release_branches=$(printf -- '%s\n' "${branches[@]}" | cut -c 8- | grep release/release_* | sort | tr '\n' ' ')
-          echo "Release branches - ${release_branches[@]}"
+          release_branches+=("develop")
           
           for release_branch in ${release_branches[@]}
           do
-            echo "Processing release branch $release_branch"
-            if [ `echo $release_branch | cut -d _ -f 2` -le `echo ${GITHUB_REF} | cut -d _ -f 2` ]
+            echo "Processing branch $release_branch"
+            # Parse both branches down to the date component and compare
+            if [ $release_branch != 'develop' ] && [ `echo $release_branch | cut -d _ -f 2` -le `echo ${GITHUB_REF} | cut -d _ -f 2` ]
             then
               echo "Release branch $release_branch is less than or equal to source release branch $source_branch - SKIPPING"
               continue
             fi
             
-            echo "Checking out release branch $release_branch"
+            echo "Checking out branch $release_branch"
             git checkout $release_branch
+            if [ $? -ne 0 ]
+            then
+              echo "Checkout of branch $release_branch failed"
+              exit 1
+            fi
             
             echo "Merging source branch $source_branch into branch $release_branch"
+            # Always create a merge commit (no fast forward)
             git merge --no-ff $source_branch
             if [ $? -ne 0 ]
             then
@@ -52,24 +60,14 @@ jobs:
             else
               echo "Pushing commit"
               git push
+              if [ $? -ne 0 ]
+              then
+                echo "Push to branch $release_branch failed"
+                exit 1
+              fi
             fi
             
             source_branch=$release_branch
             echo "Source branch set to $release_branch"
             
           done
-          
-          echo "Checking out develop"
-          git checkout develop
-          
-          echo "Merging source branch $source_branch into branch develop"
-          git merge --no-ff $source_branch
-          if [ $? -ne 0 ]
-          then
-            echo "Merge failed. Opening pull request."
-            gh pr create --head $source_branch --base develop --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
-            exit 0
-          else
-            echo "Pushing commit"
-            git push
-          fi
