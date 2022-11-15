@@ -1,8 +1,6 @@
 name: Merge to Main
 
-on:
-  workflow_dispatch:
-    in
+on: workflow_dispatch
 
 jobs:
   merge_to_master:
