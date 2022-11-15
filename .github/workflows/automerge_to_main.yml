@@ -2,7 +2,7 @@ name: Automerge to Main
 
 on:
   schedule:
-    - cron: '25 21 * * *'
+    - cron: '45 21 * * *'
 
 jobs:
   merge_to_master:
@@ -36,6 +36,14 @@ jobs:
             if [ `echo $release_branch | cut -d _ -f 2` -eq $branch_date ]
             then
               echo "Branch to merge to main - $release_branch"
+              
+              echo "Checking out release branch $release_branch"
+              git checkout main
+              if [ $? -ne 0 ]
+              then
+                echo "Checkout of $release_branch branch failed"
+                exit 1
+              fi
               
               echo "Checking out main branch"
               git checkout main
