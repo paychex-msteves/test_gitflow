@@ -1,0 +1,72 @@
+name: Automerge to Main
+
+on:
+  schedule:
+    - cron: '25 21 * * *'
+
+jobs:
+  merge_to_master:
+    name: Merges release branches to main using fast forwards
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Merge
+        shell: bash {0}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name 'Automerge'
+          git config user.email 'msteves@paychex.com'
+          
+          branch_date=$(printf '%(%Y%m%d)T\n' -1)
+          echo "Looking for release branch with date $branch_date"
+          
+          # Get remote branches
+          branches=(`git branch -r`)
+          # Strip off origin/ from the branch names, limit to release branches, and sort
+          release_branches=$(printf -- '%s\n' "${branches[@]}" | cut -c 8- | grep release/release_* | sort | tr '\n' ' ')
+          
+          for release_branch in ${release_branches[@]}
+          do
+            echo "Processing branch $release_branch"
+            # Parse release branch down to the date component and compare to our current date
+            if [ `echo $release_branch | cut -d _ -f 2` -eq $branch_date ]
+            then
+              echo "Branch to merge to main - $release_branch"
+              
+              echo "Checking out main branch"
+              git checkout main
+              if [ $? -ne 0 ]
+              then
+                echo "Checkout of main branch failed"
+                exit 1
+              fi
+              
+              echo "Merging release branch $release_branch into main branch"
+              # Always fast forward so main becomes the head of the release branch
+              git merge --ff-only $release_branch
+              if [ $? -ne 0 ]
+              then
+                echo "Merge failed. Opening pull request."
+                gh pr create --head main --base $release_branch --title "Merge to main failure" --body "There was a merge conflict merging this branch to main"
+                exit 0
+              else
+                echo "Pushing commit"
+                git push
+                if [ $? -ne 0 ]
+                then
+                  echo "Push to main branch failed"
+                  exit 1
+                fi
+              fi
+              
+              # We found the branch with the current branch, we do not need to continue 
+              exit 0
+            else
+              echo "Release branch $release_branch is not equal for the current date $branch_date - SKIPPING"
+              continue
+            fi
+          done
