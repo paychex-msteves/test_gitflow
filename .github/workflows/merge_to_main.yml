@@ -20,4 +20,30 @@ jobs:
           git config user.email 'msteves@paychex.com'
           
           source_branch=${GITHUB_REF}
-          echo "Initial source branch - $source_branch"
+          echo "Branch to merge to main - $source_branch"
+          
+          echo "Checking out main branch"
+          git checkout main
+          if [ $? -ne 0 ]
+          then
+            echo "Checkout of main branch failed"
+            exit 1
+          fi
+          
+          echo "Merging source branch $source_branch into main branch"
+          # Always fast forward so main becomes the head of the release branch
+          git merge --ff-only $source_branch
+          if [ $? -ne 0 ]
+          then
+            echo "Merge failed. Opening pull request."
+            gh pr create --head main --base $source_branch --title "Merge to main failure" --body "There was a merge conflict merging this branch to main"
+            exit 0
+          else
+            echo "Pushing commit"
+            git push
+            if [ $? -ne 0 ]
+            then
+              echo "Push to main branch failed"
+              exit 1
+            fi
+          fi
