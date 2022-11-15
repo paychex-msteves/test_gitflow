@@ -35,7 +35,7 @@ jobs:
           do
             echo "Processing branch $release_branch"
             # Parse both branches down to the date component and compare
-            if [ $release_branch -ne 'develop'] && [ `echo $release_branch | cut -d _ -f 2` -le `echo ${GITHUB_REF} | cut -d _ -f 2` ]
+            if [ $release_branch != 'develop' ] && [ `echo $release_branch | cut -d _ -f 2` -le `echo ${GITHUB_REF} | cut -d _ -f 2` ]
             then
               echo "Release branch $release_branch is less than or equal to source release branch $source_branch - SKIPPING"
               continue
