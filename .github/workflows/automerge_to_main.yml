@@ -2,7 +2,7 @@ name: Automerge to Main
 
 on:
   schedule:
-    - cron: '55 21 * * *'
+    - cron: '55 13 * * *'
 
 jobs:
   merge_to_master:
