@@ -44,6 +44,7 @@ jobs:
             echo "Checking out branch $release_branch"
             git checkout $release_branch
             if [ $? -ne 0 ]
+            then
               echo "Checkout of branch $release_branch failed"
               exit 1
             fi
@@ -60,6 +61,7 @@ jobs:
               echo "Pushing commit"
               git push
               if [ $? -ne 0 ]
+              then
                 echo "Push to branch $release_branch failed"
                 exit 1
               fi
