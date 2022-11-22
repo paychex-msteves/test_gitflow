@@ -4,4 +4,6 @@ This is a repository to test the automatic merging (and PR creation) of branches
 
 I have tested merges from a release branch back to develop.
 
-I have tested merges from a release branch to multiple future release branches, then to develop. foo bar
+I have tested merges from a release branch to multiple future release branches, then to develop.
+
+I have tested merges with conflicts and the creation of PRs.
