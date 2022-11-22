@@ -6,4 +6,4 @@ I have tested merges from a release branch back to develop.
 
 I have tested merges from a release branch to multiple future release branches, then to develop.
 
-I have tested merges with conflicts and the creation of PRs.
+I have tested merges with conflicts and the creation of PRs (and now with reviewers).
