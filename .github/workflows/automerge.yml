@@ -55,7 +55,7 @@ jobs:
             if [ $? -ne 0 ]
             then
               echo "Merge failed. Opening pull request."
-              gh pr create --head $source_branch --base $release_branch --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
+              gh pr create --head $source_branch --base $release_branch --reviewer paychex-mbuzzelli paychex---title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
               exit 0
             else
               echo "Pushing commit"
