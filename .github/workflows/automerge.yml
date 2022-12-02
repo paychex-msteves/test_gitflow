@@ -42,9 +42,10 @@ jobs:
             fi
             
             echo "Creating pull request for auto merge"
-            pull_request_url=`gh pr create --head $source_branch --base $release_branch --title "Automatic merge" --body "Automatic merge from $source_branch to $release_branch" | tail -1`
+            pr_create_output=`gh pr create --head $source_branch --base $release_branch --title "Automatic merge" --body "Automatic merge from $source_branch to $release_branch"`
             status=$?
-            echo "$pull_request_url"
+            echo "$pr_create_output"
+            pull_request_url=`echo "$pr_create_output" | tail -1`
             if [ $status -ne 0 ]
             then
               echo "PR creation failed, PR already exists - $pull_request_url"
@@ -52,7 +53,8 @@ jobs:
             fi
             
             echo "Auto merging PR $pull_request_url"
-            gh pr merge $pull_request_url --admin --merge
+            gh pr review $pull_request_url --approve
+            gh pr merge $pull_request_url --merge
             if [ $? -ne 0 ]
             then
               echo "Merge failed. Updating pull request."
