@@ -41,30 +41,20 @@ jobs:
               continue
             fi
             
-            echo "Checking out branch $release_branch"
-            git checkout $release_branch
+            echo "Creating pull request for auto merge"
+            pull_request_url=`gh pr create --head $source_branch --base $release_branch --title "Automatic merge" --body "Automatic merge from $source_branch to $release_branch" | tail -1`
             if [ $? -ne 0 ]
-            then
-              echo "Checkout of branch $release_branch failed"
-              exit 1
+              echo "PR creation failed, PR already exists - $pull_request_url"
+              exit 0
             fi
             
-            echo "Merging source branch $source_branch into branch $release_branch"
-            # Always create a merge commit (no fast forward)
-            git merge --no-ff $source_branch
+            echo "Auto merging PR $pull_request_url"
+            gh pr merge $pull_request_url --admin
             if [ $? -ne 0 ]
             then
-              echo "Merge failed. Opening pull request."
-              gh pr create --head $source_branch --base $release_branch --reviewer paychex-mbuzzelli --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
+              echo "Merge failed. Updating pull request."
+              gh pr edit $pull_request_url --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch" --add-reviewer paychex-msteves
               exit 0
-            else
-              echo "Pushing commit"
-              git push
-              if [ $? -ne 0 ]
-              then
-                echo "Push to branch $release_branch failed"
-                exit 1
-              fi
             fi
             
             source_branch=$release_branch
