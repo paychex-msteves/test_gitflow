@@ -43,16 +43,14 @@ jobs:
             
             echo "Creating pull request for auto merge"
             pull_request_url=`gh pr create --head $source_branch --base $release_branch --title "Automatic merge" --body "Automatic merge from $source_branch to $release_branch" | tail -1`
-            status=$?
-            echo "$pull_request_url"
-            if [ $status -ne 0 ]
+            if [ $? -ne 0 ]
             then
               echo "PR creation failed, PR already exists - $pull_request_url"
               exit 0
             fi
             
             echo "Auto merging PR $pull_request_url"
-            gh pr merge $pull_request_url --admin --merge
+            gh pr merge $pull_request_url --admin
             if [ $? -ne 0 ]
             then
               echo "Merge failed. Updating pull request."
