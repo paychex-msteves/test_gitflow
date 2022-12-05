@@ -55,14 +55,14 @@ jobs:
             # Always create a merge commit (no fast forward)
             git merge --no-ff $source_branch
             status=$?
-            if [ status -eq 0 ]
+            if [ $status -eq 0 ]
             then
               echo "Pushing commit"
               git push
               status=$?
             fi
             
-            if [ status -ne 0 ]
+            if [ $status -ne 0 ]
             then
               echo "Merge failed. Opening pull request."
               gh pr create --head $source_branch --base $release_branch --reviewer paychex-mbuzzelli --reviewer paychex-msteves --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
