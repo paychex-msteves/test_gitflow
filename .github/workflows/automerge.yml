@@ -26,9 +26,6 @@ jobs:
           git config user.name 'Automerge'
           git config user.email 'msteves@paychex.com'
           
-          echo ${{ github.event.pusher.username }}
-          echo "${{ github.event.pusher.name }}"
-          
           source_branch=${GITHUB_REF}
           echo "Initial source branch - $source_branch"
           
@@ -70,7 +67,7 @@ jobs:
             if [ $status -ne 0 ]
             then
               echo "Merge failed. Opening pull request."
-              gh pr create --head $source_branch --base $release_branch --reviewer paychex-mbuzzelli --reviewer paychex-msteves --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
+              gh pr create --head $source_branch --base $release_branch --reviewer ${{ github.event.pusher.name }} --title "Automatic merge failure" --body "There was a merge conflict automatically merging this branch"
               exit 0
             fi
             
