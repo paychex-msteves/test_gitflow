@@ -26,6 +26,11 @@ jobs:
           git config user.name 'Automerge'
           git config user.email 'msteves@paychex.com'
           
+          echo ${{ github.event.pusher }}
+          echo ${github.event.pusher}
+          echo "${{ github.event.pusher }}"
+          echo "${github.event.pusher}"
+          
           source_branch=${GITHUB_REF}
           echo "Initial source branch - $source_branch"
           
