@@ -26,8 +26,7 @@ jobs:
           git config user.name 'Automerge'
           git config user.email 'msteves@paychex.com'
           
-          echo ${{ github.event.pusher }}
-          echo ${github.event.pusher.username}
+          echo ${{ github.event.pusher.username }}
           echo "${{ github.event.pusher }}"
           echo "${github.event.pusher}"
           
