@@ -3,7 +3,7 @@ name: Automerge
 on:
   push:
     branches:
-      - 'release/release_*'
+      - 'release/release_[0-9]+'
       
 env:
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
@@ -29,10 +29,17 @@ jobs:
           source_branch=${GITHUB_REF}
           echo "Initial source branch - $source_branch"
           
+          suffix=`echo $source_branch | cut -d _ -f 2`
+          if [ ${#suffix} -ne 8 ]
+          then
+            echo "$source_branch does not match release branch pattern - exiting"
+            exit 0
+          fi
+          
           # Get remote branches
           branches=(`git branch -r`)
           # Strip off origin/ from the branch names, limit to release branches, and sort
-          release_branches=$(printf -- '%s\n' "${branches[@]}" | cut -c 8- | grep release/release_* | sort | tr '\n' ' ')
+          release_branches=$(printf -- '%s\n' "${branches[@]}" | cut -c 8- | grep -E "^release/release_[0-9]{8}$" | sort | tr '\n' ' ')
           release_branches+=("develop")
           
           for release_branch in ${release_branches[@]}
